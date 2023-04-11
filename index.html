@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+
+function checkInstalledApp() {
+    var isiOS = navigator.userAgent.match('iPad') || navigator.userAgent.match('iPhone') || navigator.userAgent.match('iPod'),
+        isAndroid = navigator.userAgent.match('Android');
+    if(isiOS){
+        alert("This is iOS Device");
+    }
+    else if(isAndroid){
+        alert("This is Android Device");
+    }
+    else{
+        alert("This is unknown Device");
+    }
+    //onTap()
+}
+//window.onload = checkInstalledApp;
+
+        // Change the following vars to suit your needs
+var my_app_name = "My App";
+var my_app_id = "id1438151717"
+var my_app_scheme = "ibuildx.Souq-Al-Fajr://do.this"
+
+function toggleModal(isModal, inputs, elems, msg) {
+  for (const input of inputs) input.disabled = isModal;
+  modal.style.display = isModal ? "block" : "none";
+  elems[0].textContent = isModal ? msg : "";
+}
+
+
+
+function myConfirm(msg) {
+  const inputs = [...document.querySelectorAll("input, textarea, select")].filter(input => !input.disabled);
+  const modal = document.getElementById("modal");
+  const elems = modal.children[0].children;
+
+  return new Promise((resolve) => {
+    toggleModal(true, inputs, elems, msg);
+    elems[3].onclick = () => resolve(true);
+    elems[4].onclick = () => resolve(false);
+  }).then(result => {
+    toggleModal(false, inputs, elems, msg);
+    return result;
+  });
+}
+
+
+
+function redirectMessage(msg) {
+  //("To download " + my_app_name + ", tap OK.");
+  var r = myConfirm(msg + my_app_name + ", will be downloaded if you tap OK.");
+  return r.then(ok => {
+    if (ok) {
+      console.log("Redirecting to the App Store...");
+      window.location = "itms-apps://itunes.apple.com/app/" + my_app_id;
+    } else {
+      console.log("User cancelled redirect to the App Store");
+    }
+    return ok;
+  });
+}
+
+function prepareListener() {
+  document.addEventListener("visibilitychange", function() {
+    const inputs = [...document.querySelectorAll("input, textarea, select")].filter(input => !input.disabled);
+    const modal = document.getElementById("modal");
+    const elems = modal.children[0].children;
+
+    if (!document.hasFocus()) {
+      console.log("User left tab. Closing modal popup")
+      toggleModal(false, inputs, elems, "");
+    }
+  });
+}
+
+function onTap() {
+    var isiOS = navigator.userAgent.match('iPad') || navigator.userAgent.match('iPhone') || navigator.userAgent.match('iPod'),
+        isAndroid = navigator.userAgent.match('Android');
+
+    var deviceText = "This is unknown Device. ";
+    if(isiOS){
+      deviceText = "This is iOS Device. ";
+    }
+    else if(isAndroid){
+      deviceText = "This is Android Device. ";
+    }
+  setTimeout(function() {
+    // We can't avoid the "invalid address" Safari popup,
+    // but at least we can explain it to users.
+    // We will create a modal popup behind it, which the
+    // event listener will close automatically if the app 
+    // opens and we leave the tab
+
+    redirectMessage(deviceText)
+
+  }, 50);
+  window.location = my_app_scheme;
+}
+
+
+
+
+prepareListener()
+</script>
+
+<style>
+    #modal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background: rgb(0, 0, 0);
+  background: rgba(0, 0, 0, 0.4);
+  font-family: "ms sans serif", arial, sans-serif;
+  font-size: medium;
+  border-radius: 15px;
+}
+
+#modal>div {
+  position: relative;
+  padding: 10px;
+  width: 320px;
+  height: 60px;
+  margin: 0 auto;
+  top: 50%;
+  margin-top: -45px;
+  background: white;
+  border: 2px outset;
+  border-radius: 15px;
+}
+
+
+
+
+#cancel_button {
+  position: fixed;
+  right: 50%;
+  margin-right: -95px;
+  bottom: 50%;
+  margin-bottom: -32px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: rgb(0, 122, 255);
+  font-size: medium;
+  font-weight: normal;
+}
+
+#ok_button {
+  position: fixed;
+  right: 50%;
+  margin-right: -140px;
+  bottom: 50%;
+  margin-bottom: -32px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: rgb(0, 122, 255);
+  font-size: medium;
+  font-weight: semi-bold;
+}
+
+
+    </style>
+</head>
+<body>
+    <div id="modal">
+        <div>
+          <div></div><br><br>
+          <button id="ok_button">OK</button>
+          <button id="cancel_button">Cancel</button>
+        </div>
+      </div>
+
+     
+      
+      <p><a href="#" onclick="onTap();"> Tap to check App Install Status </a></p>
+</body>
+</html>
